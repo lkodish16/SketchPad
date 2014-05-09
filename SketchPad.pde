@@ -1,16 +1,15 @@
 // draw a pixel, and make it blink to indicate that it is the cursor. *
 // add direction variables, so the player can move the cursor around. *
-// press the A button to light up the pixel the cursor is standing on. When the cursor moves onto another pixel, the pixel that it was standing on remains lit. 
+// press the A button to stamp the pixel the cursor is standing on. When the cursor moves onto another pixel, the pixel that it was standing on remains lit. 
 // press the B button while standing on a pixel to reset that pixel and have it no longer be lit.
-// create a custom color maker that starts at full-on (255,255,255) and have the cursor (which starts out at full-on) also act as the custom color maker.
-// if player holds down the A button and presses (or holds) down the Left button, the red RGB value increases.
-// if player holds down the A button and presses (or holds) down the Up button, the green RGB value increases.
-// if player holds down the A button and presses (or holds) down the Right button, the blue RGB value increases.
-// if player holds down the A button and presses (of holds) down the Down button, then all RGB values decrease.
-// if player holds down the B button and presses (or holds) down the Left button, the red RGB value decreases.
-// if player holds down the B button and presses (or holds) down the Up button, the green RGB value decreases.
-// if player holds down the B button and presses (or holds) down the Right button, the blue RGB value decreases.
-// if player holds down the B button and presses (or holds) down the Down button, then all RGB values decrease.
+// create a custom color maker that starts at full-on (255,255,255) and have the cursor (which starts out at full-on) also act as the custom color maker. *
+// the cursor can move on to other already lit pixels and still keep its color. *
+// if player holds down the A button and presses (or holds) down the Left button, the red RGB value increases. *
+// if player holds down the A button and presses (or holds) down the Up button, the green RGB value increases. *
+// if player holds down the A button and presses (or holds) down the Right button, the blue RGB value increases. *
+// if player holds down the B button and presses (or holds) down the Left button, the red RGB value decreases. *
+// if player holds down the B button and presses (or holds) down the Up button, the green RGB value decreases. *
+// if player holds down the B button and presses (or holds) down the Right button, the blue RGB value decreases. *
 // player can remove cursor from screen (if they want to admire their artwork without seeing the blinking dot) by pressing A and B buttons at the same time. They can bring the cursor back by doing the same thing.
 // find a way for the player to save their drawing.
 
@@ -19,18 +18,25 @@
 
 void setup() {
   MeggyJrSimpleSetup();  // required code, line 1 of 2.
+  Serial.begin(9600);
 }
 
 int xcoord = 4;  // initial x-coordinate of cursor.
 int ycoord = 4;  // initial y-coordinate of cursor.
 boolean lit = false;
 int dir = 1;
-int r = 0;
-int g=0;
-int b=14;
+int r = 5;
+int g = 5;
+int b = 5;
+int newColor;
+int oldColor = 5;
 
 void loop() {
-  DrawPx(xcoord,ycoord,CustomColor1);
+  DrawPx(3,4, Blue);
+  DrawPx(2,4, Blue);
+  DrawPx(1,4, Red);
+  DrawPx(0,4, Red); 
+  DrawPx(xcoord,ycoord,CustomColor1);  // having the cursor drawn last allows it to stand on top of other drawn pixels while still keeping its color.
   moveCursor();
   checkLimits();
   colorConfig();
@@ -57,21 +63,33 @@ void moveCursor() {  // use direction buttons to move cursor.
   } 
   
   if (dir == 0) {  // increases y-coordinate of cursor if Up button is pressed.
-    ycoord++;
-    dir = 1;  // resets dir to 1
+    newColor = ReadPx(xcoord, ycoord+1);  // newColor variable holds the color of the last pixel the cursor is standing on.
+    ycoord = ycoord+1;    // moves the cursor up by one.
+    oldColor = newColor;  // the oldColor variable now holds the color of the pixel the cursor is standing on.
+    DrawPx(xcoord,ycoord, CustomColor1);  // draws the cursor at its new coordinates, with its custom color. 
+    dir = 1;  // resets dir to 1 so the pixel only moves once. 
   }
   if (dir == 180) {  // decreases y-coordinate of cursor if Down button is pressed.
-    ycoord--;
-    dir = 1;  
+    newColor = ReadPx(xcoord, ycoord-1); 
+    ycoord = ycoord-1;
+    oldColor = newColor;
+    DrawPx(xcoord,ycoord,CustomColor1);
+    dir = 1;
   } 
   if (dir == 90) {  // increases x-coordinate of cursor if Right button is pressed.
-    xcoord++;
-    dir = 1; 
+    newColor = ReadPx(xcoord+1, ycoord);  
+    xcoord = xcoord+1;  // moves the cursor left by one.
+    oldColor = newColor;
+    DrawPx(xcoord,ycoord,CustomColor1);
+    dir = 1;
   }
-  if (dir == 270) {  // decreases y-coordinate of cursor if Left button is pressed.
-    xcoord--;
-    dir = 1;  
-  }
+  if (dir == 270) {  // decreases y-coordinate of cursor if Left button is pressed. 
+    newColor = ReadPx(xcoord-1, ycoord);
+    xcoord = xcoord-1;
+    oldColor = newColor;
+    DrawPx(xcoord,ycoord,CustomColor1);
+    dir = 1;
+    }
 }
 
 void checkLimits() {  // contains cursor within the boundaries of the 8x8 screen.
@@ -91,44 +109,51 @@ void checkLimits() {  // contains cursor within the boundaries of the 8x8 screen
 
 void colorConfig() {
   EditColor(CustomColor1, r,g,b);
-  if (Button_A && Button_Left) {
+  if (Button_A && Button_Left) {  // increases red RGB value
     r++;
-    if (r > 15) {  // caps r value at max level of shading.
+    if (r > 15) {  // caps red at max level of shading.
       r = 15;
     }
   }
-  if (Button_A && Button_Up) {
+  if (Button_A && Button_Up) {  // increases green RGB value.
     g++;
-    if (g > 15) {  // caps g value at max level of shading.
+    if (g > 15) {  // caps green at max level of shading.
       g = 15;
     }
   }
-  if (Button_A && Button_Right) {
+  if (Button_A && Button_Right) {  // increases blue RGB value,
     b++;
-    if (b > 15) {  // caps b value at max level of shading.
+    if (b > 15) {  // caps blue at max level of shading.
       b = 15;
     }
   }
   
-  if (Button_B && Button_Left) {
+  if (Button_B && Button_Left) {  // decreases red RGB value.
     r--;
-    if (r < 0) {  // caps r value at min level of shading.
+    if (r < 0) {  // caps red at min level of shading.
       r = 0;
     }
   }
-  if (Button_B && Button_Up) {
+  if (Button_B && Button_Up) {  // decreases green RGB value.
     g--;
-    if (g < 0) {  // caps g value at min level of shading.
+    if (g < 0) {  // caps green at min level of shading.
       g = 0;
     }
   }
-  if (Button_B && Button_Right) {
+  if (Button_B && Button_Right) {  // decreases blue RGB value.
     b--;
-    if (b < 0) {  // caps b value at min level of shading.
+    if (b < 0) {  // caps blue at min level of shading.
       b = 0;
     }
-   }
- }
+  }
+}
+
+
+    
+
+
+  
+  
 
     
 
