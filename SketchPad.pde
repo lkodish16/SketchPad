@@ -2,7 +2,7 @@
 // add direction variables, so the player can move the cursor around. *
 // press the A button to stamp the pixel the cursor is standing on. When the cursor moves onto another pixel, the pixel that it was standing on remains lit. 
 // press the B button while standing on a pixel to reset that pixel and have it no longer be lit.
-// create a custom color maker that starts at full-on (255,255,255) and have the cursor (which starts out at full-on) also act as the custom color maker. *
+// create a custom color maker that and have the cursor also act as the custom color configurer. *
 // the cursor can move on to other already lit pixels and still keep its color. *
 // if player holds down the A button and presses (or holds) down the Left button, the red RGB value increases. *
 // if player holds down the A button and presses (or holds) down the Up button, the green RGB value increases. *
@@ -18,7 +18,6 @@
 
 void setup() {
   MeggyJrSimpleSetup();  // required code, line 1 of 2.
-  Serial.begin(9600);
 }
 
 int xcoord = 4;  // initial x-coordinate of cursor.
@@ -28,21 +27,44 @@ int dir = 1;
 int r = 5;
 int g = 5;
 int b = 5;
-int newColor;
-int oldColor = 5;
+int counter = 1;
+int savedColor = ReadPx(xcoord,ycoord);
 
+int myArray[][64] = {{0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {1,1,2,2,CustomColor1,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0}
+};
+                  
+                     
+                               
 void loop() {
-  DrawPx(3,4, Blue);
-  DrawPx(2,4, Blue);
-  DrawPx(1,4, Red);
-  DrawPx(0,4, Red); 
-  DrawPx(xcoord,ycoord,CustomColor1);  // having the cursor drawn last allows it to stand on top of other drawn pixels while still keeping its color.
+  DrawPx(3,4, 2);
+  DrawPx(2,4, 2);
+  DrawPx(1,4, 1);
+  DrawPx(0,4, 1); 
+  blink();
   moveCursor();
   checkLimits();
   colorConfig();
   DisplaySlate();
   ClearSlate();
   delay(100);
+  counter++;
+}
+
+
+void blink() {  // blinks the cursor.
+  if (counter % 1 == 0) {
+    DrawPx(xcoord,ycoord, CustomColor1);
+  } 
+  else {
+    DrawPx(xcoord,ycoord, savedColor);
+  }
 }
 
 void moveCursor() {  // use direction buttons to move cursor.
@@ -50,7 +72,7 @@ void moveCursor() {  // use direction buttons to move cursor.
   CheckButtonsDown();
   
   if ((!Button_A && Button_Up) && (!Button_B && Button_Up)) {  // if up button is pressed, and A button and B button aren't pressed, reassign dir to 0.
-    dir = 0;
+    dir = 0; 
   }  
   if ((!Button_A && Button_Down) && (!Button_B && Button_Down)) {  // if down button is pressed, and A button and B button aren't pressed, reassign dir to 180.
     dir = 180;
@@ -63,31 +85,19 @@ void moveCursor() {  // use direction buttons to move cursor.
   } 
   
   if (dir == 0) {  // increases y-coordinate of cursor if Up button is pressed.
-    newColor = ReadPx(xcoord, ycoord+1);  // newColor variable holds the color of the last pixel the cursor is standing on.
     ycoord = ycoord+1;    // moves the cursor up by one.
-    oldColor = newColor;  // the oldColor variable now holds the color of the pixel the cursor is standing on.
-    DrawPx(xcoord,ycoord, CustomColor1);  // draws the cursor at its new coordinates, with its custom color. 
     dir = 1;  // resets dir to 1 so the pixel only moves once. 
   }
   if (dir == 180) {  // decreases y-coordinate of cursor if Down button is pressed.
-    newColor = ReadPx(xcoord, ycoord-1); 
     ycoord = ycoord-1;
-    oldColor = newColor;
-    DrawPx(xcoord,ycoord,CustomColor1);
     dir = 1;
   } 
   if (dir == 90) {  // increases x-coordinate of cursor if Right button is pressed.
-    newColor = ReadPx(xcoord+1, ycoord);  
     xcoord = xcoord+1;  // moves the cursor left by one.
-    oldColor = newColor;
-    DrawPx(xcoord,ycoord,CustomColor1);
     dir = 1;
   }
   if (dir == 270) {  // decreases y-coordinate of cursor if Left button is pressed. 
-    newColor = ReadPx(xcoord-1, ycoord);
     xcoord = xcoord-1;
-    oldColor = newColor;
-    DrawPx(xcoord,ycoord,CustomColor1);
     dir = 1;
     }
 }
@@ -147,6 +157,12 @@ void colorConfig() {
     }
   }
 }
+ 
+
+  
+  
+  
+
 
 
     
