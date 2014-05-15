@@ -18,6 +18,7 @@
 
 void setup() {
   MeggyJrSimpleSetup();  // required code, line 1 of 2.
+  Serial.begin(9600);
 }
 
 int xcoord = 4;  // initial x-coordinate of cursor.
@@ -27,8 +28,8 @@ int dir = 1;
 int r = 5;
 int g = 5;
 int b = 5;
-int counter = 1;
-int savedColor = ReadPx(xcoord,ycoord);
+int counter = 2;
+int savedColor;
 
 int myArray[][64] = {{0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0},
@@ -47,19 +48,20 @@ void loop() {
   DrawPx(2,4, 2);
   DrawPx(1,4, 1);
   DrawPx(0,4, 1); 
-  blink();
+  DrawPx(0,5,CustomColor1);
   moveCursor();
   checkLimits();
   colorConfig();
+  blink();
   DisplaySlate();
   ClearSlate();
-  delay(100);
-  counter++;
+  delay(300);
+  counter = counter+1;
 }
 
 
 void blink() {  // blinks the cursor.
-  if (counter % 1 == 0) {
+  if (counter % 2 == 0) {  // blinks the custom color is counter is even, otherwise blinks the color of the pixel it's standing on. 
     DrawPx(xcoord,ycoord, CustomColor1);
   } 
   else {
@@ -72,15 +74,20 @@ void moveCursor() {  // use direction buttons to move cursor.
   CheckButtonsDown();
   
   if ((!Button_A && Button_Up) && (!Button_B && Button_Up)) {  // if up button is pressed, and A button and B button aren't pressed, reassign dir to 0.
+    savedColor = ReadPx(xcoord, ycoord+1);
     dir = 0; 
   }  
   if ((!Button_A && Button_Down) && (!Button_B && Button_Down)) {  // if down button is pressed, and A button and B button aren't pressed, reassign dir to 180.
+    savedColor = ReadPx(xcoord, ycoord-1);
     dir = 180;
+
   } 
   if ((!Button_A && Button_Right) && (!Button_B && Button_Right))  { // if right button is pressed, and A button and B button aren't pressed, reassign dir to 90. 
+    savedColor = ReadPx(xcoord+1, ycoord);
     dir = 90;
   } 
   if ((!Button_A && Button_Left) && (!Button_B && Button_Left)){  // if left button is pressed, and A button and B button aren't pressed, reassign dir to 270.
+    savedColor = ReadPx(xcoord-1, ycoord);
     dir = 270;
   } 
   
@@ -119,24 +126,32 @@ void checkLimits() {  // contains cursor within the boundaries of the 8x8 screen
 
 void colorConfig() {
   EditColor(CustomColor1, r,g,b);
-  if (Button_A && Button_Left) {  // increases red RGB value
+  if (Button_B && Button_Left) {  // increases red RGB value
     r++;
     if (r > 15) {  // caps red at max level of shading.
       r = 15;
     }
   }
-  if (Button_A && Button_Up) {  // increases green RGB value.
+  if (Button_B && Button_Up) {  // increases green RGB value.
     g++;
     if (g > 15) {  // caps green at max level of shading.
       g = 15;
     }
   }
-  if (Button_A && Button_Right) {  // increases blue RGB value,
+  if (Button_B && Button_Right) {  // increases blue RGB value,
     b++;
     if (b > 15) {  // caps blue at max level of shading.
       b = 15;
     }
   }
+  
+  if (Button_B && Button_Down) {
+    r = 0;
+    g = 0;
+    b = 0;
+  }
+}
+  /*
   
   if (Button_B && Button_Left) {  // decreases red RGB value.
     r--;
@@ -157,7 +172,7 @@ void colorConfig() {
     }
   }
 }
- 
+*/
 
   
   
