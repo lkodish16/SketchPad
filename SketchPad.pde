@@ -14,15 +14,15 @@
 // find a way for the player to save their drawing.
 
 
-#include <MeggyJrSimple.h>  // required code, line 1 of 2.
+#include <MeggyJrSimple.h>  // required code, line 1 of 2. 
 
 void setup() {
   MeggyJrSimpleSetup();  // required code, line 1 of 2.
   Serial.begin(9600);
 }
 
-int xcoord = 4;  // initial x-coordinate of cursor.
-int ycoord = 4;  // initial y-coordinate of cursor.
+int xcoord = 4;  // starting x-coordinate of cursor.
+int ycoord = 4;  // starting y-coordinate of cursor.
 boolean lit = false;
 int dir = 1;
 int r = 5;
@@ -31,11 +31,11 @@ int b = 5;
 int counter = 2;
 int savedColor;
 
-int myArray[][64] = {{0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {1,1,2,2,CustomColor1,0,0,0},
+int myArray[][64] = {{0,0,0,0,1,0,0,0},  
+                     {0,0,0,0,1,0,0,0},
+                     {0,0,0,0,2,0,0,0},
+                     {0,0,0,0,2,0,0,0},
+                     {0,0,0,0,CustomColor1,0,0,0},
                      {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0}
@@ -44,19 +44,20 @@ int myArray[][64] = {{0,0,0,0,0,0,0,0},
                      
                                
 void loop() {
-  DrawPx(3,4, 2);
-  DrawPx(2,4, 2);
-  DrawPx(1,4, 1);
-  DrawPx(0,4, 1); 
-  DrawPx(0,5,CustomColor1);
+  for (int i = 0; i < 8; i++) {  // draws all of the pixels saved onto to myArray.
+    for (int j = 0; j < 8; j++) {
+      DrawPx(i,j, myArray[i][j]);
+    }
+  }    
   moveCursor();
   checkLimits();
   colorConfig();
   blink();
+  stamp();
   DisplaySlate();
   ClearSlate();
   delay(300);
-  counter = counter+1;
+  counter = counter+1;  
 }
 
 
@@ -145,36 +146,22 @@ void colorConfig() {
     }
   }
   
-  if (Button_B && Button_Down) {
+  if (Button_B && Button_Down) {  // resets RGB values to 0. 
     r = 0;
     g = 0;
     b = 0;
   }
 }
-  /*
-  
-  if (Button_B && Button_Left) {  // decreases red RGB value.
-    r--;
-    if (r < 0) {  // caps red at min level of shading.
-      r = 0;
-    }
-  }
-  if (Button_B && Button_Up) {  // decreases green RGB value.
-    g--;
-    if (g < 0) {  // caps green at min level of shading.
-      g = 0;
-    }
-  }
-  if (Button_B && Button_Right) {  // decreases blue RGB value.
-    b--;
-    if (b < 0) {  // caps blue at min level of shading.
-      b = 0;
+
+void stamp() {  // if A is pressed, send the coordinates and the color of the cursor to the corresponding spot in myArray. 
+  if (Button_A) {
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        myArray[xcoord][ycoord] = ReadPx(xcoord,ycoord);
+      }
     }
   }
 }
-*/
-
-  
   
   
 
