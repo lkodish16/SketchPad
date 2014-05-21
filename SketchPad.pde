@@ -1,7 +1,7 @@
 // draw a pixel, and make it blink to indicate that it is the cursor. *
 // add direction variables, so the player can move the cursor around. *
-// press the A button to stamp the pixel the cursor is standing on. When the cursor moves onto another pixel, the pixel that it was standing on remains lit. 
-// press the B button while standing on a pixel to reset that pixel and have it no longer be lit.
+// press the A button to stamp the pixel the cursor is standing on. When the cursor moves onto another pixel, the pixel that it was standing on remains lit. *
+// press the B button while standing on a pixel to reset that pixel and have it no longer be lit. *
 // create a custom color maker that and have the cursor also act as the custom color configurer. *
 // the cursor can move on to other already lit pixels and still keep its color. *
 // if player holds down the A button and presses (or holds) down the Left button, the red RGB value increases. *
@@ -10,8 +10,8 @@
 // if player holds down the B button and presses (or holds) down the Left button, the red RGB value decreases. *
 // if player holds down the B button and presses (or holds) down the Up button, the green RGB value decreases. *
 // if player holds down the B button and presses (or holds) down the Right button, the blue RGB value decreases. *
-// player can remove cursor from screen (if they want to admire their artwork without seeing the blinking dot) by pressing A and B buttons at the same time. They can bring the cursor back by doing the same thing.
-// find a way for the player to save their drawing.
+
+
 
 
 #include <MeggyJrSimple.h>  // required code, line 1 of 2. 
@@ -23,91 +23,67 @@ void setup() {
 
 int xcoord = 4;  // starting x-coordinate of cursor.
 int ycoord = 4;  // starting y-coordinate of cursor.
-boolean lit = false;
-int dir = 1;
-int r = 5;
-int g = 5;
-int b = 5;
-int counter = 2;
-int savedColor;
+int counter = 2;  // counter for blink method. 
+int savedColor;  // holds the value of the color of the last pixel the cursor was standing on. 
+int colorCounter = 1;  // for changing the color of the cursor.
 
-int myArray[][64] = {{0,0,0,0,1,0,0,0},  
-                     {0,0,0,0,1,0,0,0},
-                     {0,0,0,0,2,0,0,0},
-                     {0,0,0,0,2,0,0,0},
-                     {0,0,0,0,CustomColor1,0,0,0},
+int myArray[][64] = {{0,0,0,0,0,0,0,0},  // array that holds integer values for the color of every one of the 64 pixels.
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
+                     {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0},
                      {0,0,0,0,0,0,0,0}
 };
-                  
-                     
-                               
+
+
+                                                                               
 void loop() {
   for (int i = 0; i < 8; i++) {  // draws all of the pixels saved onto to myArray.
     for (int j = 0; j < 8; j++) {
       DrawPx(i,j, myArray[i][j]);
     }
-  }    
-  moveCursor();
-  checkLimits();
-  colorConfig();
-  blink();
-  stamp();
+  } 
+  moveCursor();  // can move the cursor with the directional buttons.
+  checkLimits();  // contains cursor within the boundaries of the 8x8 screen.
+  colorConfig();  // changes color of cursor
+  blink();  // blinks the cursor.
+  stamp();  // if A is pressed, send the coordinates and the color of the cursor to the corresponding spot in myArray.
   DisplaySlate();
   ClearSlate();
   delay(300);
   counter = counter+1;  
 }
 
-
 void blink() {  // blinks the cursor.
-  if (counter % 2 == 0) {  // blinks the custom color is counter is even, otherwise blinks the color of the pixel it's standing on. 
-    DrawPx(xcoord,ycoord, CustomColor1);
+  if (counter % 2 == 0) {  // blinks the custom color is counter is even.
+    DrawPx(xcoord,ycoord, colorCounter);
   } 
   else {
-    DrawPx(xcoord,ycoord, savedColor);
+    DrawPx(xcoord,ycoord, savedColor);  // otherwise blinks the color of the pixel it's standing on. 
   }
 }
 
 void moveCursor() {  // use direction buttons to move cursor.
   CheckButtonsPress(); 
-  CheckButtonsDown();
   
-  if ((!Button_A && Button_Up) && (!Button_B && Button_Up)) {  // if up button is pressed, and A button and B button aren't pressed, reassign dir to 0.
-    savedColor = ReadPx(xcoord, ycoord+1);
-    dir = 0; 
+  if (!Button_B && Button_Up) {  // if up button is pressed, and B button isn't being pressed, move cursor up one. 
+    savedColor = ReadPx(xcoord, ycoord+1);  // holds the color of the pixel the cursor is moving from.
+    ycoord = ycoord + 1;
   }  
-  if ((!Button_A && Button_Down) && (!Button_B && Button_Down)) {  // if down button is pressed, and A button and B button aren't pressed, reassign dir to 180.
+  if (!Button_B && Button_Down) {  // if down button is pressed, and B button isn't being pressed, move cursor down one. 
     savedColor = ReadPx(xcoord, ycoord-1);
-    dir = 180;
-
+    ycoord = ycoord - 1;
   } 
-  if ((!Button_A && Button_Right) && (!Button_B && Button_Right))  { // if right button is pressed, and A button and B button aren't pressed, reassign dir to 90. 
+  if (!Button_B && Button_Right)  { // if right button is pressed, and B button isn't being pressed, move cursor one to the right. 
     savedColor = ReadPx(xcoord+1, ycoord);
-    dir = 90;
+    xcoord = xcoord + 1;
   } 
-  if ((!Button_A && Button_Left) && (!Button_B && Button_Left)){  // if left button is pressed, and A button and B button aren't pressed, reassign dir to 270.
+  if (!Button_B && Button_Left){  // if left button is pressed, and B button isn't being pressed, move cursor one to the left.
     savedColor = ReadPx(xcoord-1, ycoord);
-    dir = 270;
+    xcoord = xcoord - 1;
   } 
-  
-  if (dir == 0) {  // increases y-coordinate of cursor if Up button is pressed.
-    ycoord = ycoord+1;    // moves the cursor up by one.
-    dir = 1;  // resets dir to 1 so the pixel only moves once. 
-  }
-  if (dir == 180) {  // decreases y-coordinate of cursor if Down button is pressed.
-    ycoord = ycoord-1;
-    dir = 1;
-  } 
-  if (dir == 90) {  // increases x-coordinate of cursor if Right button is pressed.
-    xcoord = xcoord+1;  // moves the cursor left by one.
-    dir = 1;
-  }
-  if (dir == 270) {  // decreases y-coordinate of cursor if Left button is pressed. 
-    xcoord = xcoord-1;
-    dir = 1;
-    }
 }
 
 void checkLimits() {  // contains cursor within the boundaries of the 8x8 screen.
@@ -125,32 +101,17 @@ void checkLimits() {  // contains cursor within the boundaries of the 8x8 screen
   }
 }
 
-void colorConfig() {
-  EditColor(CustomColor1, r,g,b);
-  if (Button_B && Button_Left) {  // increases red RGB value
-    r++;
-    if (r > 15) {  // caps red at max level of shading.
-      r = 15;
+void colorConfig() {  // pressing B cycles through 9 colors. 
+    if (Button_B) {  
+      colorCounter = colorCounter + 1;  
+      DrawPx(xcoord,ycoord, colorCounter);  // the value of colorCounter corresponds to a color. 
     }
-  }
-  if (Button_B && Button_Up) {  // increases green RGB value.
-    g++;
-    if (g > 15) {  // caps green at max level of shading.
-      g = 15;
+    if (colorCounter == 8) {  // instead of dimRed, draw full on.
+      colorCounter = 15;
     }
-  }
-  if (Button_B && Button_Right) {  // increases blue RGB value,
-    b++;
-    if (b > 15) {  // caps blue at max level of shading.
-      b = 15;
+    if (colorCounter == 16) {  // after full on, draw dark. 
+      colorCounter = 0;
     }
-  }
-  
-  if (Button_B && Button_Down) {  // resets RGB values to 0. 
-    r = 0;
-    g = 0;
-    b = 0;
-  }
 }
 
 void stamp() {  // if A is pressed, send the coordinates and the color of the cursor to the corresponding spot in myArray. 
