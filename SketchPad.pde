@@ -1,17 +1,15 @@
 // draw a pixel, and make it blink to indicate that it is the cursor. *
 // add direction variables, so the player can move the cursor around. *
 // press the A button to stamp the pixel the cursor is standing on. When the cursor moves onto another pixel, the pixel that it was standing on remains lit. *
-// press the B button while standing on a pixel to reset that pixel and have it no longer be lit. *
 // create a custom color maker that and have the cursor also act as the custom color configurer. *
 // the cursor can move on to other already lit pixels and still keep its color. *
+// pressing the B button cycles through the available colors. Dark is included for those who want to erase a previously drawn pixel.
 // if player holds down the A button and presses (or holds) down the Left button, the red RGB value increases. *
 // if player holds down the A button and presses (or holds) down the Up button, the green RGB value increases. *
 // if player holds down the A button and presses (or holds) down the Right button, the blue RGB value increases. *
 // if player holds down the B button and presses (or holds) down the Left button, the red RGB value decreases. *
 // if player holds down the B button and presses (or holds) down the Up button, the green RGB value decreases. *
 // if player holds down the B button and presses (or holds) down the Right button, the blue RGB value decreases. *
-
-
 
 
 #include <MeggyJrSimple.h>  // required code, line 1 of 2. 
@@ -27,14 +25,14 @@ int counter = 2;  // counter for blink method.
 int savedColor;  // holds the value of the color of the last pixel the cursor was standing on. 
 int colorCounter = 1;  // for changing the color of the cursor.
 
-int myArray[][64] = {{0,0,0,0,0,0,0,0},  // array that holds integer values for the color of every one of the 64 pixels.
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0},
-                     {0,0,0,0,0,0,0,0}
+int dotArray[][64] = {{0,0,0,0,0,0,0,0},  // array that holds integer values for the color of every one of the 64 pixels.
+                      {0,0,0,0,0,0,0,0},
+                      {0,0,0,0,0,0,0,0},
+                      {0,0,0,0,0,0,0,0},
+                      {0,0,0,0,0,0,0,0},
+                      {0,0,0,0,0,0,0,0},
+                      {0,0,0,0,0,0,0,0},
+                      {0,0,0,0,0,0,0,0}
 };
 
 
@@ -52,21 +50,21 @@ void loop() {
   stamp();  // if A is pressed, send the coordinates and the color of the cursor to the corresponding spot in myArray.
   DisplaySlate();
   ClearSlate();
-  delay(300);
+  delay(150);
   counter = counter+1;  
 }
 
 void blink() {  // blinks the cursor.
-  if (counter % 2 == 0) {  // blinks the custom color is counter is even.
-    DrawPx(xcoord,ycoord, colorCounter);
+  if (counter % 4 == 0) {  // blinks the custom color is counter is even.
+    DrawPx(xcoord,ycoord, savedColor);
   } 
   else {
-    DrawPx(xcoord,ycoord, savedColor);  // otherwise blinks the color of the pixel it's standing on. 
+    DrawPx(xcoord,ycoord, colorCounter);  // otherwise blinks the color of the pixel it's standing on. 
   }
 }
 
 void moveCursor() {  // use direction buttons to move cursor.
-  CheckButtonsPress(); 
+  CheckButtonsDown(); 
   
   if (!Button_B && Button_Up) {  // if up button is pressed, and B button isn't being pressed, move cursor up one. 
     savedColor = ReadPx(xcoord, ycoord+1);  // holds the color of the pixel the cursor is moving from.
@@ -109,7 +107,7 @@ void colorConfig() {  // pressing B cycles through 9 colors.
     if (colorCounter == 8) {  // instead of dimRed, draw full on.
       colorCounter = 15;
     }
-    if (colorCounter == 16) {  // after full on, draw dark. 
+    if (colorCounter == 16) {  // after full on, draw dark. Dark can be used to delete a dot. 
       colorCounter = 0;
     }
 }
