@@ -1,0 +1,20 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh9020\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 1) The name of my program is Sketchpad, and it's for people who want to make pixel art using the MeggyJr, but don't want to have to go through the hassle of writing out a bunch of DrawPx() statements. This program also makes it easier to create pixel art because you don't have to think about what coordinate each pixel should be drawn to, you can just put a dot wherever you want.\
+\
+2) Getting the stamp function to work was very difficult for me. I was really stuck and had no idea on how to get it to work, but by collaborating with Mr. Kiang, and getting information on some new concepts (2-dimensional arrays) that I wouldn't have known about if I hadn't talked to Mr. Kiang, I was eventually able to get it to work. It was also difficult to get the stamped pixels to not change color when the cursor changed color by editing CustomColor1, but after talking to Mr. Kiang and my classmates, I changed the custom color maker to a color shuffler. By having all of the colors saved as variables that the cursor shuffled through, it made it possible to stamp pixels and make them stay that color. I was surprised at how verbose my code was. I would read through it and thought of ways to make the code shorter. I've heard about websites like codegolf where people try to write a program in the least lines of code, and that made me want to try and make program shorter. I didn't do this as a challenge like codegolf. I make my code more concise because it would make it easier to read, and because I saw several parts that could have easily been made way shorter (instead of using direction variables, just put those lines in with where you check whether the direction buttons have been pressed.)\
+\
+	There is still the bug where the cursor doesn't always stamp a dot when A is pressed. This is because I put in the method where the dot blinks. The blink method is needed so the player can tell the color of the pixel the cursor is standing on. The way the blink method works is a counter that increments every time through the loop. If the counter is divisible by 4, then it will draw the cursor as dark, otherwise it will draw it whatever color the player has chosen. The reason the cursor doesn't always stamp the dot is because if the player presses A when dark is the color of the cursor, then it won't stamp the pixel because there is no color to be stamped. \
+\
+	If I had more time to work on this project, I would want to fix the bug where the stamp doesn't always work. I think making pixel art by coding in Arduino has two advantages over my program: you can create just about any color you want with CustomColor, and it essentially saves your drawing because all you have to do is run the program for it to appear on the Meggyjr. So if I had more time, I would want to add both of these features into my program. I already had the custom color feature, but got rid of it so that making a stamped pixel keep its color was possible. \
+\
+	The process of making this program taught me the importance of writing organized, well-commented, and concise code. By making a conscious effort to put these qualities into my code, it made it much easier to read not only for others, but also myself and it really helped me when I had to debug. Making this made me appreciate the work of the people who actually do this for a living. It seems simple while you're playing a video game or using  program someone created, but in reality, that person spent an enormous amount of time and effort into it. I also learned that it's okay to ask for help. I've always thought that asking for help was a personal failure, and considered to be the same as giving up, but I definitely couldn't have done this project if it wasn't for the help of Mr. Kiang and my classmates. \
+\
+\
+\
+\
+}
